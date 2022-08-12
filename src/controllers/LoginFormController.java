@@ -12,7 +12,8 @@ public class LoginFormController {
     public JFXTextField txtUserNameId;
     public JFXTextField txtPasswordId;
 
-    public void LoginOnAction(ActionEvent actionEvent) {
+    public void LoginOnAction(ActionEvent actionEvent) throws IOException {
+        PrimaryStageCommon<LoginFormController> s = new PrimaryStageCommon().setStage(loginFormPaneId, new LoginFormController(), "Chat Room", "../views/ChatRoomForm.fxml");
     }
 
     public void CreateNewAccountOnAction(ActionEvent actionEvent) throws IOException {
