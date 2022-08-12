@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="chatRoomFormId" prefHeight="588.0" prefWidth="696.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ChatRoomFormController">
+   <children>
+      <AnchorPane disable="true" layoutX="36.0" layoutY="58.0" prefHeight="424.0" prefWidth="630.0" style="-fx-border-color: black;">
+         <children>
+            <ScrollPane fx:id="scrollPaneId" prefHeight="426.0" prefWidth="630.0">
+               <content>
+                  <JFXTextArea fx:id="txtAreaId" prefHeight="426.0" prefWidth="627.0" />
+               </content>
+            </ScrollPane>
+         </children>
+      </AnchorPane>
+      <JFXTextField fx:id="txtSendMessageId" layoutX="36.0" layoutY="513.0" prefHeight="35.0" prefWidth="566.0" promptText="Enter Your Message" />
+      <JFXButton buttonType="RAISED" layoutX="617.0" layoutY="510.0" prefHeight="42.0" prefWidth="44.0" style="-fx-background-color: #4CDF79; -fx-background-radius: 100%;" text="b" textFill="WHITE">
+         <font>
+            <Font name="Corbel Bold" size="14.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </JFXButton>
+      <ImageView fitHeight="35.0" fitWidth="27.0" layoutX="575.0" layoutY="517.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../assets/images/icons8-camera-30.png" />
+         </image>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </ImageView>
+      <ImageView fitHeight="27.0" fitWidth="31.0" layoutX="627.0" layoutY="518.0" onMouseClicked="#sendMessageBtnOnClick" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../assets/images/icons8-send-64.png" />
+         </image>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </ImageView>
+      <ImageView fx:id="imgBackToLoginBtn" fitHeight="30.0" fitWidth="31.0" layoutX="14.0" layoutY="14.0" onMouseClicked="#imgBackToLoginBtnOnMouseClicked" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../assets/images/icons8-logout-64.png" />
+         </image>
+         <cursor>
+            <Cursor fx:constant="OPEN_HAND" />
+         </cursor>
+      </ImageView>
+   </children>
+</AnchorPane>
