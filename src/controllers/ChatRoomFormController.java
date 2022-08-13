@@ -12,11 +12,13 @@ import javafx.scene.layout.AnchorPane;
 import util.PrimaryStageCommon;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
 
 public class ChatRoomFormController {
+    public static JFXTextArea txtAreaIdDup;
     public JFXTextField txtSendMessageId;
     public ImageView imgBackToLoginBtn;
     public AnchorPane chatRoomFormId;
@@ -30,13 +32,15 @@ public class ChatRoomFormController {
     public synchronized void setClient() {
         new Thread(() -> {
             try {
+                System.out.println("running");
                 while (check != true) {
-                    /*System.out.println("If Clicked = " + ifClicked);*/
                     if (ifClicked == true) {
-                        System.out.println("running");
+                        socket = new Socket("localhost", 3000);
                         ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
                         objectOutputStream.writeObject(new MessageDTO(LoginFormController.userName, txtSendMessageId.getText()));
                         objectOutputStream.flush();
+                        System.out.println("Check");
+                        /*Thread.sleep(1000);*/
                         ifClicked = false;
                     }
                     if (txtSendMessageId.getText().equalsIgnoreCase("Exist")) {
@@ -49,11 +53,13 @@ public class ChatRoomFormController {
         }).start();
     }
 
-    public void initialize() throws IOException {
+    public void initialize() throws IOException, ClassNotFoundException {
         scrollPaneId.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        socket = new Socket("localhost", 3000);
+        txtAreaIdDup = txtAreaId;
+        setMsgToTxtAreaFromDb();
         setClient();
-        setMessagesToTxtArea();
+
+
     }
 
     public void sendMessageBtnOnClick(MouseEvent mouseEvent) {
@@ -65,11 +71,23 @@ public class ChatRoomFormController {
         PrimaryStageCommon<LoginFormController> s = new PrimaryStageCommon().setStage(chatRoomFormId, new LoginFormController(), "Login Form", "../views/LoginForm.fxml");
     }
 
-    public void setMessagesToTxtArea() {
+    public void setMessagesToTxtArea() throws IOException, ClassNotFoundException {
+        ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+        List<MessageDTO> all = (List<MessageDTO>) objectInputStream.readObject();
+        System.out.println(all.toString());
+        if (all != null) {
+            txtAreaId.clear();
+            for (int i = 0; i < all.size(); i++) {
+                System.out.println(all.get(i).getMessage());
+                txtAreaId.appendText(all.get(i).getName() + " : " + all.get(i).getMessage() + "\n");
+            }
+        }
+    }
+
+    public void setMsgToTxtAreaFromDb() {
         List<MessageDTO> all = messageBO.getAll();
         txtAreaId.clear();
         for (int i = 0; i < all.size(); i++) {
-            /*System.out.println(all.get(i));*/
             txtAreaId.appendText(all.get(i).getName() + " : " + all.get(i).getMessage() + "\n");
         }
     }
