@@ -13,7 +13,7 @@ public class MessageDaoImpl implements MessageDao {
     private Session session = null;
 
     @Override
-    public boolean save(Message m) {
+    public synchronized boolean save(Message m) {
         if (m != null) {
             session = FactoryConfiguration.getFactoryConfiguration().getSession();
             Transaction transaction = session.beginTransaction();

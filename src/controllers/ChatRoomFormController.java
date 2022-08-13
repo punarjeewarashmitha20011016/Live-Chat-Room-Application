@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
-import java.util.Random;
 
 public class ChatRoomFormController {
     public JFXTextField txtSendMessageId;
@@ -25,21 +24,41 @@ public class ChatRoomFormController {
     public JFXTextArea txtAreaId;
     Socket socket = null;
     private MessageBO messageBO = (MessageBO) BOFactory.getBoFactory().getBOTypes(BOFactory.BOTypes.MESSAGE);
+    private boolean check = false;
+    private boolean ifClicked = false;
+
+    public synchronized void setClient() {
+        new Thread(() -> {
+            try {
+                while (check != true) {
+                    /*System.out.println("If Clicked = " + ifClicked);*/
+                    if (ifClicked == true) {
+                        System.out.println("running");
+                        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                        objectOutputStream.writeObject(new MessageDTO(LoginFormController.userName, txtSendMessageId.getText()));
+                        objectOutputStream.flush();
+                        ifClicked = false;
+                    }
+                    if (txtSendMessageId.getText().equalsIgnoreCase("Exist")) {
+                        check = true;
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
 
     public void initialize() throws IOException {
         scrollPaneId.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        Random r = new Random();
-        int i = r.nextInt(3001) + 2000;
-        System.out.println("Num - " + i);
         socket = new Socket("localhost", 3000);
+        setClient();
         setMessagesToTxtArea();
     }
 
-    public void sendMessageBtnOnClick(MouseEvent mouseEvent) throws IOException {
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-        objectOutputStream.writeObject(new MessageDTO(LoginFormController.userName, txtSendMessageId.getText()));
-        objectOutputStream.flush();
-        setMessagesToTxtArea();
+    public void sendMessageBtnOnClick(MouseEvent mouseEvent) {
+        ifClicked = true;
+        txtAreaId.appendText(LoginFormController.userName + " : " + txtSendMessageId.getText() + "\n");
     }
 
     public void imgBackToLoginBtnOnMouseClicked(MouseEvent mouseEvent) throws IOException {
@@ -48,7 +67,9 @@ public class ChatRoomFormController {
 
     public void setMessagesToTxtArea() {
         List<MessageDTO> all = messageBO.getAll();
+        txtAreaId.clear();
         for (int i = 0; i < all.size(); i++) {
+            /*System.out.println(all.get(i));*/
             txtAreaId.appendText(all.get(i).getName() + " : " + all.get(i).getMessage() + "\n");
         }
     }

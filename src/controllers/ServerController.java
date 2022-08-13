@@ -20,14 +20,15 @@ public class ServerController {
             System.out.println("Server Started");
             try {
                 serverSocket = new ServerSocket(3000);
-                accept = serverSocket.accept();
                 System.out.println("Connection Established");
-
+                accept = serverSocket.accept();
                 while (check != true) {
                     ObjectInputStream objectInputStream = new ObjectInputStream(accept.getInputStream());
                     MessageDTO dto = (MessageDTO) objectInputStream.readObject();
                     System.out.println("Message - " + dto);
                     messageBO.save(dto);
+                    /*setMessagesToTxtArea();*/
+                    /*serverSocket.close();*/
                 }
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();

@@ -13,7 +13,7 @@ public class MessageBOImpl implements MessageBO {
     private MessageDao messageDao = (MessageDao) DAOFactory.getDaoFactory().getDao(DAOFactory.DAOTypes.MESSAGE);
 
     @Override
-    public void save(MessageDTO m) {
+    public synchronized void save(MessageDTO m) {
         System.out.println(m.toString());
         if (m != null) {
             messageDao.save(new Message(m.getName(), m.getMessage()));
@@ -26,6 +26,7 @@ public class MessageBOImpl implements MessageBO {
         List<MessageDTO> dtos = new ArrayList<>();
         for (Message m : all
         ) {
+            System.out.println(m.toString());
             dtos.add(new MessageDTO(m.getName(), m.getMessage()));
         }
         return dtos;

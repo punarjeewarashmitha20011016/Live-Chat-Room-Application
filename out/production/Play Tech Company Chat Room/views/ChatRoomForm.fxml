@@ -12,11 +12,11 @@
 
 <AnchorPane fx:id="chatRoomFormId" prefHeight="588.0" prefWidth="696.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ChatRoomFormController">
    <children>
-      <AnchorPane disable="true" layoutX="36.0" layoutY="58.0" prefHeight="424.0" prefWidth="630.0" style="-fx-border-color: black;">
+      <AnchorPane layoutX="36.0" layoutY="58.0" prefHeight="424.0" prefWidth="630.0" style="-fx-border-color: black;">
          <children>
             <ScrollPane fx:id="scrollPaneId" prefHeight="426.0" prefWidth="630.0">
                <content>
-                  <JFXTextArea fx:id="txtAreaId" prefHeight="426.0" prefWidth="627.0" />
+                  <JFXTextArea fx:id="txtAreaId" editable="false" labelFloat="true" prefHeight="426.0" prefWidth="627.0" />
                </content>
             </ScrollPane>
          </children>
