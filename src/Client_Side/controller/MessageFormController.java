@@ -1,5 +1,6 @@
 package Client_Side.controller;
 
+import Client_Side.model.Message;
 import javafx.event.ActionEvent;
 import javafx.geometry.NodeOrientation;
 import javafx.scene.control.Label;
@@ -7,10 +8,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
 public class MessageFormController extends Thread {
@@ -23,25 +21,38 @@ public class MessageFormController extends Thread {
     public PrintWriter writer;
     public Socket socket;
 
+    public ObjectInputStream objectInputStream;
+    public ObjectOutputStream objectOutputStream;
+
     public void initialize() {
         System.out.println("Initialized method" + ClientLoginFormController.userName);
         lblContactName.setText(ClientLoginFormController.userName);
         try {
             socket = new Socket("localhost", 5000);
             System.out.println("Socket is connecting with server");
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            writer = new PrintWriter(socket.getOutputStream(), true);
-            this.start();
+            objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+            System.out.println("Socket is connecting with server2");
+            objectInputStream = new ObjectInputStream(socket.getInputStream());
 
+            this.start();
+            System.out.println("Socket is connecting with server3");
         } catch (Exception e) {
             e.printStackTrace();
         }
         txtArea.setEditable(false);
     }
 
-    public void messageSend(){
+    public void messageSend() {
         String msg = txtMessage.getText().trim();
-        writer.println(ClientLoginFormController.userName + ": " + msg);
+        /*writer.println(ClientLoginFormController.userName + ": " + msg);*/
+        try {
+            objectOutputStream.writeObject(new Message(ClientLoginFormController.userName, msg));
+            objectOutputStream.flush();
+
+            System.out.println("flushed");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         txtArea.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
         txtMessage.setText("");
         if (msg.equalsIgnoreCase("Bye") || (msg.equalsIgnoreCase("logout"))) {
@@ -60,32 +71,24 @@ public class MessageFormController extends Thread {
 
     @Override
     public void run() {
+
         try {
+            System.out.println("returned");
+
             while (true) {
-                String msg = reader.readLine();
-                String[] tokens = msg.split(" ");
-                String cmd = tokens[0];
-                StringBuilder fullMessage = new StringBuilder();
-                for (int i = 1; i < tokens.length; i++) {
-                    fullMessage.append(tokens[i]);
-                }
-
-                System.out.println(fullMessage);
-
-                if (cmd.equalsIgnoreCase(ClientLoginFormController.userName + ": ")) {
+                Message msg = (Message) objectInputStream.readObject();
+                System.out.println("Msg In Client Thread : " + msg);
+                if (msg.getName().equalsIgnoreCase(ClientLoginFormController.userName + ": ")) {
+                    System.out.println("Socket is connecting with server3");
                     continue;
-                } else if (fullMessage.toString().equalsIgnoreCase("bye")) {
+                } else if (msg.getMessage().equalsIgnoreCase("bye")) {
                     break;
                 }
+                txtArea.appendText(msg.getName() + " : " + msg.getMessage() + "\n\n");
 
-                txtArea.appendText(msg + "\n\n");
             }
 
-            reader.close();
-            writer.close();
-            socket.close();
-
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }

@@ -29,13 +29,13 @@ public class ServerSideAppInitializer {
             }
         } catch (IOException e) {
             System.out.println("Error occurred in main: " + e.getStackTrace());
-        } finally {
+        }/* finally {
             try {
-                socket.close();
-                serverSocket.close();
+                *//*socket.close();
+                serverSocket.close()*//*;
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
     }
 }
