@@ -1,6 +1,7 @@
 package Server_Side;
 
 import Client_Side.model.Message;
+import javafx.scene.image.Image;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -42,7 +43,7 @@ public class ServerThread extends Thread {
                     break;
                 }
                 System.out.println("Server received " + msg.getMessage());
-                printToAllClients(msg.getName(), msg.getMessage());
+                printToAllClients(msg.getName(), msg.getMessage(), msg.getImage());
 
 
             }
@@ -51,13 +52,18 @@ public class ServerThread extends Thread {
         }
     }
 
-    private void printToAllClients(String name, String outputString) throws IOException {
+    private void printToAllClients(String name, String outputString, String image) throws IOException {
         for (ServerThread sT : threadArrayList) {
             try {
                 System.out.println("Server side name = " + name);
                 System.out.println("Server side msg = " + outputString);
-                sT.objectOutputStream.writeObject(new Message(name, outputString));
-                sT.objectOutputStream.flush();
+                if (image != null) {
+                    sT.objectOutputStream.writeObject(new Message(name, outputString, image));
+                    sT.objectOutputStream.flush();
+                } else {
+                    sT.objectOutputStream.writeObject(new Message(name, outputString, null));
+                    sT.objectOutputStream.flush();
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();

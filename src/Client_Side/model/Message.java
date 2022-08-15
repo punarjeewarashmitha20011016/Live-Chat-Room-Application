@@ -1,17 +1,21 @@
 package Client_Side.model;
 
+import javafx.scene.image.Image;
+
 import java.io.Serializable;
 
 public class Message implements Serializable {
     String name;
     String message;
+    String image;
 
     public Message() {
     }
 
-    public Message(String name, String message) {
+    public Message(String name, String message, String image) {
         this.name = name;
         this.message = message;
+        this.image = image;
     }
 
     public String getName() {
@@ -30,11 +34,20 @@ public class Message implements Serializable {
         this.message = message;
     }
 
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
     @Override
     public String toString() {
         return "Message{" +
                 "name='" + name + '\'' +
                 ", message='" + message + '\'' +
+                ", image=" + image +
                 '}';
     }
 }
