@@ -1,7 +1,6 @@
 package Server_Side;
 
 import Client_Side.model.Message;
-import javafx.scene.image.Image;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -43,25 +42,26 @@ public class ServerThread extends Thread {
                     break;
                 }
                 System.out.println("Server received " + msg.getMessage());
-                printToAllClients(msg.getName(), msg.getMessage(), msg.getImage());
+                printToAllClients(msg.getName(), msg.getMessage(), msg.getEmoji(), msg.getImage());
 
 
             }
         } catch (Exception e) {
-            System.out.println("Error occurred " + e.getStackTrace());
+            System.out.println("Error occurred in thread" + e.getStackTrace());
         }
     }
 
-    private void printToAllClients(String name, String outputString, String image) throws IOException {
+    private void printToAllClients(String name, String outputString, String emoji, String image) throws IOException {
         for (ServerThread sT : threadArrayList) {
             try {
                 System.out.println("Server side name = " + name);
                 System.out.println("Server side msg = " + outputString);
+                System.out.println("Server side emoji = " + emoji);
                 if (image != null) {
-                    sT.objectOutputStream.writeObject(new Message(name, outputString, image));
+                    sT.objectOutputStream.writeObject(new Message(name, outputString, emoji, image));
                     sT.objectOutputStream.flush();
                 } else {
-                    sT.objectOutputStream.writeObject(new Message(name, outputString, null));
+                    sT.objectOutputStream.writeObject(new Message(name, outputString, emoji, null));
                     sT.objectOutputStream.flush();
                 }
 

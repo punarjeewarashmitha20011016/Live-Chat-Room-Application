@@ -1,20 +1,20 @@
 package Client_Side.model;
 
-import javafx.scene.image.Image;
-
 import java.io.Serializable;
 
 public class Message implements Serializable {
     String name;
     String message;
+    String emoji;
     String image;
 
     public Message() {
     }
 
-    public Message(String name, String message, String image) {
+    public Message(String name, String message,String emoji, String image) {
         this.name = name;
         this.message = message;
+        this.emoji = emoji;
         this.image = image;
     }
 
@@ -42,12 +42,21 @@ public class Message implements Serializable {
         this.image = image;
     }
 
+    public String getEmoji() {
+        return emoji;
+    }
+
+    public void setEmoji(String emoji) {
+        this.emoji = emoji;
+    }
+
     @Override
     public String toString() {
         return "Message{" +
                 "name='" + name + '\'' +
                 ", message='" + message + '\'' +
-                ", image=" + image +
+                ", emoji='" + emoji + '\'' +
+                ", image='" + image + '\'' +
                 '}';
     }
 }

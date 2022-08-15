@@ -5,6 +5,8 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -14,6 +16,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,18 +57,55 @@ public class MessageFormController extends Thread {
         try {
             if (imageFilePath != null) {
                 System.out.println("File path : " + imageFilePath);
-                objectOutputStream.writeObject(new Message(ClientLoginFormController.userName, msg, imageFilePath));
-                objectOutputStream.flush();
-            } else {
-                objectOutputStream.writeObject(new Message(ClientLoginFormController.userName, msg, null));
-                objectOutputStream.flush();
-            }
 
+                if (msg != null) {
+                    if (EmojiFormController.clickedEmoji != null) {
+                        objectOutputStream.writeObject(new Message(ClientLoginFormController.userName, msg, EmojiFormController.clickedEmoji, imageFilePath));
+                        objectOutputStream.flush();
+                    } else {
+                        objectOutputStream.writeObject(new Message(ClientLoginFormController.userName, msg, null, imageFilePath));
+                        objectOutputStream.flush();
+                    }
+                } else {
+                    if (EmojiFormController.clickedEmoji != null) {
+                        objectOutputStream.writeObject(new Message(ClientLoginFormController.userName, "", EmojiFormController.clickedEmoji, imageFilePath));
+                        objectOutputStream.flush();
+                    } else {
+                        objectOutputStream.writeObject(new Message(ClientLoginFormController.userName, "", null, imageFilePath));
+                        objectOutputStream.flush();
+                    }
+                }
+            } else {
+                try {
+                    if (msg != null) {
+                        if (EmojiFormController.clickedEmoji != null) {
+                            objectOutputStream.writeObject(new Message(ClientLoginFormController.userName, msg, EmojiFormController.clickedEmoji, null));
+                            objectOutputStream.flush();
+                        } else {
+                            objectOutputStream.writeObject(new Message(ClientLoginFormController.userName, msg, null, null));
+                            objectOutputStream.flush();
+                        }
+                    } else {
+                        if (EmojiFormController.clickedEmoji != null) {
+                            objectOutputStream.writeObject(new Message(ClientLoginFormController.userName, "", EmojiFormController.clickedEmoji, null));
+                            objectOutputStream.flush();
+                        } else {
+                            objectOutputStream.writeObject(new Message(ClientLoginFormController.userName, "", null, null));
+                            objectOutputStream.flush();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
             System.out.println("flushed");
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-        /*txtArea.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);*/
+        EmojiFormController.clickedEmoji = null;
+        imageFilePath = null;
         txtMessage.setText("");
         if (msg.equalsIgnoreCase("Bye") || (msg.equalsIgnoreCase("logout"))) {
             System.exit(0);
@@ -98,6 +138,7 @@ public class MessageFormController extends Thread {
                 Thread.sleep(500);
                 Label label = new Label();
                 Platform.runLater(() -> {
+                            String emojiStyle = "-fx-font-size: 25px";
                             if (msg.getImage() != null) {
                                 Image image = new Image(msg.getImage());
                                 ImageView imageView = new ImageView();
@@ -105,19 +146,46 @@ public class MessageFormController extends Thread {
                                 imageView.setFitWidth(100);
                                 imageView.setFitHeight(100);
 
-                                if (msg.getMessage() != null) {
-                                    label.setText(msg.getName() + " : " + msg.getMessage() + "\n\n");
+                                if (!msg.getMessage().isEmpty()) {
+                                    if (msg.getEmoji() != null) {
+                                        label.setText(msg.getName() + " : " + msg.getMessage() + " " + msg.getEmoji() + "\n\n");
+                                    } else {
+                                        label.setText(msg.getName() + " : " + msg.getMessage() + "\n\n");
+                                    }
                                     label.setGraphic(imageView);
                                     label.setContentDisplay(ContentDisplay.BOTTOM);
                                 } else {
-                                    label.setText(msg.getName() + " : " + "\n\n");
+                                    if (msg.getEmoji() != null) {
+                                        Label l = new Label(msg.getEmoji());
+                                        l.setStyle(emojiStyle);
+                                        label.setText(msg.getName() + " : " + "\n\n");
+                                        label.setGraphic(l);
+                                    } else {
+                                        label.setText(msg.getName() + " : " + "\n\n");
+                                    }
                                     label.setGraphic(imageView);
                                     label.setContentDisplay(ContentDisplay.BOTTOM);
                                 }
-                            } else {
-                                label.setText(msg.getName() + " : " + msg.getMessage() + "\n\n");
+                            } else if (msg.getImage() == null) {
+                                if (!msg.getMessage().isEmpty()) {
+                                    if (msg.getEmoji() != null) {
+                                        Label l = new Label(msg.getEmoji());
+                                        l.setStyle(emojiStyle);
+                                        label.setText(msg.getName() + " : " + msg.getMessage() + " " + "\n\n");
+                                        label.setGraphic(l);
+                                        label.setContentDisplay(ContentDisplay.BOTTOM);
+                                    } else {
+                                        label.setText(msg.getName() + " : " + msg.getMessage() + "\n\n");
+                                    }
+                                } else {
+                                    Label l = new Label(msg.getEmoji());
+                                    l.setStyle(emojiStyle);
+                                    label.setText(msg.getName() + " : " + "\n\n");
+                                    label.setGraphic(l);
+                                    label.setContentDisplay(ContentDisplay.BOTTOM);
+                                }
                             }
-                            label.setStyle("-fx-background-color:  #4CDF79;-fx-text-fill: white;-fx-background-radius: 10 10 10 10;-fx-border-radius: 10 10 10 10;-fx-padding: 0 10 0 10");
+                            label.setStyle("-fx-background-color:  #4CDF79;-fx-text-fill: white;-fx-background-radius: 10 10 10 10;-fx-border-radius: 10 10 10 10;-fx-padding: 0 10 0 10;-fx-font-size: 13px");
                             observableList.addAll(label);
                             messageVBox.getChildren().clear();
                             messageVBox.setSpacing(10);
@@ -139,5 +207,13 @@ public class MessageFormController extends Thread {
         File file = fileChooser.showOpenDialog(messageControllerPane.getScene().getWindow());
 
         imageFilePath = file.toURI().toString();
+    }
+
+    public void selectEmojiOnClick(MouseEvent mouseEvent) throws IOException {
+        Scene scene = new Scene(FXMLLoader.load(this.getClass().getResource("../view/EmojiForm.fxml")));
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.setTitle("Emoji Form");
+        stage.show();
     }
 }
