@@ -8,7 +8,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class MessageFormController extends Thread {
@@ -17,8 +19,6 @@ public class MessageFormController extends Thread {
     public TextArea txtArea;
     public TextField txtMessage;
 
-    public BufferedReader reader;
-    public PrintWriter writer;
     public Socket socket;
 
     public ObjectInputStream objectInputStream;
@@ -29,13 +29,10 @@ public class MessageFormController extends Thread {
         lblContactName.setText(ClientLoginFormController.userName);
         try {
             socket = new Socket("localhost", 5000);
-            System.out.println("Socket is connecting with server");
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            System.out.println("Socket is connecting with server2");
             objectInputStream = new ObjectInputStream(socket.getInputStream());
 
             this.start();
-            System.out.println("Socket is connecting with server3");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -44,7 +41,6 @@ public class MessageFormController extends Thread {
 
     public void messageSend() {
         String msg = txtMessage.getText().trim();
-        /*writer.println(ClientLoginFormController.userName + ": " + msg);*/
         try {
             objectOutputStream.writeObject(new Message(ClientLoginFormController.userName, msg));
             objectOutputStream.flush();
@@ -79,7 +75,6 @@ public class MessageFormController extends Thread {
                 Message msg = (Message) objectInputStream.readObject();
                 System.out.println("Msg In Client Thread : " + msg);
                 if (msg.getName().equalsIgnoreCase(ClientLoginFormController.userName + ": ")) {
-                    System.out.println("Socket is connecting with server3");
                     continue;
                 } else if (msg.getMessage().equalsIgnoreCase("bye")) {
                     break;

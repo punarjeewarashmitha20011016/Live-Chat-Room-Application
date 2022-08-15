@@ -5,7 +5,6 @@ import Client_Side.model.Message;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -13,7 +12,6 @@ public class ServerThread extends Thread {
 
     private final Socket socket;
     private final ArrayList<ServerThread> threadArrayList;
-    private PrintWriter output;
     private ObjectOutputStream objectOutputStream;
 
     public ServerThread(Socket socket, ArrayList<ServerThread> threads) {
@@ -25,7 +23,6 @@ public class ServerThread extends Thread {
     public void run() {
         try {
             //Reading the input from Client
-            /*BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));*/
 
 
             ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
@@ -33,7 +30,6 @@ public class ServerThread extends Thread {
 
             /*returning the output to the client : true statement is to flush the buffer otherwise
             we have to do it manually*/
-            /*output = new PrintWriter(socket.getOutputStream(), true);*/
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
 
             //infinite loop for server
@@ -45,8 +41,6 @@ public class ServerThread extends Thread {
                 if (msg.getMessage().equals("exit")) {
                     break;
                 }
-                /*printToAllClients(outputString);
-                System.out.println("Server received " + outputString);*/
                 System.out.println("Server received " + msg.getMessage());
                 printToAllClients(msg.getName(), msg.getMessage());
 
@@ -59,7 +53,6 @@ public class ServerThread extends Thread {
 
     private void printToAllClients(String name, String outputString) throws IOException {
         for (ServerThread sT : threadArrayList) {
-            /*sT.output.println(outputString);*/
             try {
                 System.out.println("Server side name = " + name);
                 System.out.println("Server side msg = " + outputString);
